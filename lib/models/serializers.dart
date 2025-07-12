@@ -4,6 +4,7 @@ import 'package:built_collection/built_collection.dart';
 
 import 'product_info.dart';
 import 'product_list_response.dart';
+import 'string_from_int_serializer.dart';
 
 part 'serializers.g.dart';
 
@@ -19,5 +20,6 @@ final Serializers serializers = (_$serializers.toBuilder()
       [FullType(ProductInfo)],
     ), () => ListBuilder<ProductInfo>(),
   )
+  ..add(StringFromIntSerializer())
   ..addPlugin(StandardJsonPlugin())
 ).build();

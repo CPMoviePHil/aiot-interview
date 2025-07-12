@@ -38,8 +38,7 @@ abstract class ProductInfo implements Built<ProductInfo, ProductInfoBuilder> {
 
 
   Map<String, dynamic>? toJsonMap() {
-    return serializers.serializeWith(ProductInfo.serializer, this)
-    as Map<String, dynamic>?;
+    return serializers.serializeWith(ProductInfo.serializer, this) as Map<String, dynamic>?;
   }
 
   String? toJson() {
