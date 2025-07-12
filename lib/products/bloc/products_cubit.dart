@@ -14,7 +14,7 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   final ProductsRepository _repository;
 
-  Future<void> getData() async {
+  Future<void> load() async {
     final List<ProductInfo> result = await _repository.getProducts();
     if (result.isEmpty) {
       emit(const ProductEmptyState());
