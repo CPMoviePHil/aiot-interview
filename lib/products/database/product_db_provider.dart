@@ -55,18 +55,20 @@ class ProductDBProvider {
     final db = await instance.database;
     final Batch batch = db.batch();
 
-    for (ProductInfo product in products) {
-      if (product.toJsonMap() != null) {
-        final value = product.toJsonMap()!;
+    for (final ProductInfo product in products) {
+      final value = product.toJsonMap();
+      if (value != null) {
         batch.insert(_table, value, conflictAlgorithm: ConflictAlgorithm.replace);
       }
     }
     await batch.commit();
   }
 
-  Future<List<ProductInfo>> queryList() async {
+  Future<List<ProductInfo>> queryList({String? keyword}) async {
     final db = await instance.database;
-    final List<Map<String, dynamic>> maps = await db.query(_table);
+    final List<Map<String, dynamic>> maps = keyword == null 
+        ? await db.query(_table) 
+        : await db.query(_table, where: "$_columnProductMarketName LIKE ?", whereArgs: ["%$keyword%"]);
 
     return List<ProductInfo>.generate(
         maps.length, (index) => ProductInfo((b) => b

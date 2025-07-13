@@ -8,9 +8,9 @@ import 'package:http/http.dart' as http;
 
 class ProductsRepository {
 
-  Future<List<ProductInfo>> getProducts() async {
+  Future<List<ProductInfo>> getProducts({String? keyword}) async {
     final ProductDBProvider dbProvider = ProductDBProvider.instance;
-    final List<ProductInfo> query = await dbProvider.queryList();
+    final List<ProductInfo> query = await dbProvider.queryList(keyword: keyword);
     if (query.isEmpty) {
       final result = await _getAPIProducts();
       if (result != null) {

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../utils.dart';
 import '../bloc/products_cubit.dart';
 import '../models/product_info.dart';
 import '../repository/products_repository.dart';
 
 import '../../colors.dart';
+import '../../utils.dart';
 
-class ProductsListPage extends StatelessWidget {
+class ProductListPage extends StatelessWidget {
 
-  const ProductsListPage({super.key});
+  const ProductListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +18,38 @@ class ProductsListPage extends StatelessWidget {
       create: (_) => ProductsCubit(
         repository: ProductsRepository(),
       )..load(),
-      child: _ProductListView(key: const Key("products")),
+      child: _ProductListWidget(key: const Key("products")),
     );
   }
-
 }
 
-class _ProductListView extends StatelessWidget {
+class _ProductListWidget extends StatefulWidget {
 
-  const _ProductListView({super.key});
+  const _ProductListWidget({super.key});
 
+  @override
+  State<_ProductListWidget> createState() => _ProductListWidgetState();
+}
+
+class _ProductListWidgetState extends State<_ProductListWidget> {
+
+  final TextEditingController _textEditingController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(),
+      appBar: _CustomAppBar(
+        key: Key("#appbar"),
+        controller: _textEditingController,
+        focusNode: _focusNode,
+      ),
       body: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, state) {
           if (state is ProductsLoadingState) {
@@ -57,9 +75,20 @@ class _ProductListView extends StatelessWidget {
   }
 }
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class _CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
-  const CustomAppBar({super.key});
+  const _CustomAppBar({super.key, required this.controller, required this.focusNode});
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+
+  Future<void> search(BuildContext context, String text) async {
+    await context.read<ProductsCubit>().load(keyword: text.isEmpty ? null : text);
+  }
+
+  void unfocus() {
+    focusNode.unfocus();
+  }
 
   @override
   Widget build(BuildContext context) => AppBar(
@@ -68,6 +97,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       height: 56,
       width: MediaQuery.of(context).size.width - 80,
       child: TextFormField(
+        controller: controller,
+        focusNode: focusNode,
         autofocus: false,
         decoration: InputDecoration(
           border: OutlineInputBorder(
@@ -85,20 +116,24 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           prefixIcon: Padding(
             padding: EdgeInsets.only(top: 0.0, left: 10), // add padding to adjust icon
             child: InkWell(
-              onTap: () {
-
+              onTap: () async {
+                unfocus();
+                await search(context, controller.text);
               },
               child: Icon(Icons.search_outlined, size: 28, color: colorB3B3B3),
             ),
           ),
         ),
+        onFieldSubmitted: (String text) async {
+          unfocus();
+          await search(context, text);
+        },
       ),
     ),
     titleSpacing: 0,
     automaticallyImplyLeading: false,
     elevation: 0,
   );
-
 
   @override
   Size get preferredSize => const Size.fromHeight(56);

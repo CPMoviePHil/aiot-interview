@@ -10,12 +10,14 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   ProductsCubit({
     required ProductsRepository repository
-  }) : _repository = repository, super(const ProductsLoadingState());
+  }) : _repository = repository, super(const ProductsInitialState());
 
   final ProductsRepository _repository;
 
-  Future<void> load() async {
-    final List<ProductInfo> result = await _repository.getProducts();
+  Future<void> load({String? keyword}) async {
+    emit(const ProductsLoadingState());
+    await Future.delayed(Duration(seconds: 1));
+    final List<ProductInfo> result = await _repository.getProducts(keyword: keyword);
     if (result.isEmpty) {
       emit(const ProductEmptyState());
     } else {
