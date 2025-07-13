@@ -53,23 +53,20 @@ class _ProductListWidgetState extends State<_ProductListWidget> {
       ),
       body: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, state) {
-          if (state is ProductsLoadingState) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+          switch (state) {
+            case ProductsInitialState():
+            case ProductsLoadingState():
+              return Center(child: CircularProgressIndicator());
+            case ProductEmptyState():
+              return Center(child: Text("oops.. not found anything"));
+            case ProductsDataState():
+              final List<ProductInfo> values = state.values;
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: values.length,
+                itemBuilder: (context, index) => ProductCard(product: values[index]),
+              );
           }
-          if (state is ProductsDataState) {
-            final List<ProductInfo> values = state.values;
-            return ListView.builder(
-              shrinkWrap: true,
-              itemCount: values.length,
-              itemBuilder: (context, index) => ProductCard(product: values[index]),
-            );
-          }
-
-          return Center(
-            child: Text("Empty List"),
-          );
         },
       ),
     );

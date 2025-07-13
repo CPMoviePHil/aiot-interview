@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 import '../database/product_db_provider.dart';
 import '../models/product_info.dart';
@@ -11,7 +12,7 @@ class ProductsRepository {
   Future<List<ProductInfo>> getProducts({String? keyword}) async {
     final ProductDBProvider dbProvider = ProductDBProvider.instance;
     final List<ProductInfo> query = await dbProvider.queryList(keyword: keyword);
-    if (query.isEmpty) {
+    if (keyword == null && query.isEmpty) {
       final result = await _getAPIProducts();
       if (result != null) {
         if (result.data != null) {
@@ -26,6 +27,8 @@ class ProductsRepository {
       } else {
         throw Exception("api response is null");
       }
+    } else if (keyword != null && query.isEmpty) {
+      return <ProductInfo>[];
     } else {
       return query;
     }
@@ -35,6 +38,9 @@ class ProductsRepository {
     final url = "https://static-resrc.s3.amazonaws.com/app/test/marttest.json";
 
     final response = await http.get(Uri.parse(url));
+
+    developer.log("api call!");
+
     if (response.statusCode == 200) {
       return ProductListResponse.fromJsonMap(json.decode(response.body));
     } else {
