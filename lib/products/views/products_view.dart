@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/products_cubit.dart';
 import '../models/product_info.dart';
 import '../repository/products_repository.dart';
+import '../views/product_detail_view.dart';
 
 import '../../colors.dart';
 import '../../utils.dart';
@@ -154,66 +155,71 @@ class ProductCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(5)
       ),
       margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      child: Row(
-        children: <Widget>[
-          SizedBox(width: 20),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5),
-            child: AspectRatio(
-              aspectRatio: 160 / 220,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.fitHeight,
-                    alignment: FractionalOffset.topCenter,
-                    image: NetworkImage(_product.productImage!),
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ProductDetailPage(product: _product)),
+        ),
+        child: Row(
+          children: <Widget>[
+            SizedBox(width: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 5),
+              child: AspectRatio(
+                aspectRatio: 160 / 220,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      fit: BoxFit.fitHeight,
+                      alignment: FractionalOffset.topCenter,
+                      image: NetworkImage(_product.productImage!),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(top: 30),
-                    child: Text(
-                      _product.productMarketName!,
-                      style: TextStyle(
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        currencyFormatter.format(_product.productFinalPrice),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(top: 30),
+                      child: Text(
+                        _product.productMarketName!,
                         style: TextStyle(
-                          color: Colors.redAccent,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 15,
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Icon(Icons.favorite_outline, color: colorB3B3B3),
-                          SizedBox(width: 5),
-                          Icon(Icons.shopping_cart_outlined, color: colorB3B3B3)
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          currencyFormatter.format(_product.productFinalPrice),
+                          style: TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Icon(Icons.favorite_outline, color: colorB3B3B3),
+                            SizedBox(width: 5),
+                            Icon(Icons.shopping_cart_outlined, color: colorB3B3B3)
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
